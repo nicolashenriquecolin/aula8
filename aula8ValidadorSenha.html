@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Validador de Senha</title>
+  <style>
+    .requisito { margin: 5px 0; }
+    .ok { color: green; }
+    .nok { color: red; }
+  </style>
+</head>
+<body>
+  <h2>Validador de Senha</h2>
+  <input type="password" id="senha" placeholder="Digite sua senha" oninput="validarSenha()" />
+  <div id="forca"></div>
+  <div id="requisitos"></div>
+
+  <script>
+    function validarSenha() {
+      const senha = document.getElementById("senha").value;
+      const requisitos = {
+        comprimento12: senha.length >= 12,
+        comprimento8: senha.length >= 8,
+        maiuscula: /[A-Z]/.test(senha),
+        minuscula: /[a-z]/.test(senha),
+        numero: /[0-9]/.test(senha),
+        especial: /[^A-Za-z0-9]/.test(senha)
+      };
+
+      let requisitosAtendidos = 0;
+
+      // Considera o comprimento de 12 como um extra (prioritário)
+      if (requisitos.comprimento12) requisitosAtendidos++;
+      else if (requisitos.comprimento8) requisitosAtendidos++;
+
+      requisitosAtendidos += requisitos.maiuscula ? 1 : 0;
+      requisitosAtendidos += requisitos.minuscula ? 1 : 0;
+      requisitosAtendidos += requisitos.numero ? 1 : 0;
+      requisitosAtendidos += requisitos.especial ? 1 : 0;
+
+      let forca = "Fraca";
+      if (requisitosAtendidos > 5) {
+        forca = "Forte";
+      } else if (requisitosAtendidos > 3) {
+        forca = "Média";
+      }
+
+      document.getElementById("forca").innerText = `Força: ${forca}`;
+      document.getElementById("requisitos").innerHTML = `
+        <div class="requisito ${requisitos.comprimento12 ? 'ok' : 'nok'}">+12 caracteres</div>
+        <div class="requisito ${(!requisitos.comprimento12 && requisitos.comprimento8) ? 'ok' : 'nok'}">+8 caracteres</div>
+        <div class="requisito ${requisitos.maiuscula ? 'ok' : 'nok'}">Letras maiúsculas</div>
+        <div class="requisito ${requisitos.minuscula ? 'ok' : 'nok'}">Letras minúsculas</div>
+        <div class="requisito ${requisitos.numero ? 'ok' : 'nok'}">Números</div>
+        <div class="requisito ${requisitos.especial ? 'ok' : 'nok'}">Caracteres especiais</div>
+      `;
+    }
+  </script>
+</body>
+</html>

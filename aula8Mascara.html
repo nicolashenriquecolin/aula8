@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Máscara Contextual - CPF ou RG</title>
+  <script>
+    function aplicarMascara(input, tipo) {
+      input.value = input.value.replace(/\D/g, ""); // Remove tudo que não for número
+
+      if (tipo === "cpf") {
+        input.value = input.value
+          .replace(/^(\d{3})(\d)/, "$1.$2")
+          .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+          .replace(/\.(\d{3})\.(\d{3})(\d)/, ".$1.$2-$3")
+          .slice(0, 14); // CPF formatado: 000.000.000-00
+      } else if (tipo === "rg") {
+        input.value = input.value
+          .replace(/^(\d{2})(\d)/, "$1.$2")
+          .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+          .replace(/\.(\d{3})\.(\d{3})(\d)/, ".$1.$2-$3")
+          .slice(0, 12); // RG formatado: 00.000.000-0
+      }
+    }
+
+    function atualizarMascara() {
+      const tipo = document.getElementById("tipo").value;
+      const campo = document.getElementById("documento");
+
+      // Limpa o valor atual e aplica nova máscara se necessário
+      campo.value = "";
+      campo.setAttribute("placeholder", tipo === "cpf" ? "000.000.000-00" : "00.000.000-0");
+
+      // Remove eventos anteriores
+      campo.oninput = () => aplicarMascara(campo, tipo);
+    }
+  </script>
+</head>
+<body>
+  <label for="tipo">Tipo de Documento:</label>
+  <select id="tipo" onchange="atualizarMascara()">
+    <option value="cpf">CPF</option>
+    <option value="rg">RG</option>
+  </select>
+
+  <br><br>
+
+  <label for="documento">Documento:</label>
+  <input type="text" id="documento" placeholder="000.000.000-00" oninput="aplicarMascara(this, 'cpf')">
+</body>
+</html>
